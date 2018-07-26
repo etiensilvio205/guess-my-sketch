@@ -1,0 +1,800 @@
+<!doctype html>
+<html>
+  <head>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3mobile.css">
+    <title>Socket.IO chat</title>
+    <style>
+      
+      body { background-color:#42485d; }
+      #Greet{display:none;}
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+	  #chatbox{height:350px;overflow:auto;padding:10px;}
+	  #tableConnected{display:none;}
+	  #startBtn{display:none;}
+	  #timer{display:none;}
+	  #role{display:none;}
+	  #word{display:none;}
+	  #spanword{display:none;}
+	  #playerscon{font-weight:bold;}
+	  #divPoints{display:none;}
+	  #gameArea{display:none;}
+	  #newRoomAlert{display:none;}
+	  #drawer{display:none;}
+	  #roomControl{display:none;color:red;}
+	  #roomControlmembers{display:none;color:red;}
+	  #nameControl{display:none;color:red;}
+	  
+	  
+	  
+	  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+    </style>
+  </head>
+  
+  <body>
+  <div class="w3-row w3-animate-top" style="padding:5%" id="gameArea">
+  <div class="w3-col s12 m12 l4 w3-center w3-container" >
+		  <div class="w3-row w3-section w3-container" id="unameInput" style="background-color:#74b5b1;padding:20px;">
+			  
+			  <input type="text" id="uname" placeholder="Username" class="w3-input w3-border"/></br>
+			  
+			  
+			  
+			  <button class="w3-btn" id="btname" style="background-color:#93e0a8;">OK</button>
+			  <h6 id="nameControl">This username is already taken in this game. Please try again!</h6>
+		  </div>
+		  
+		  
+		
+		  <div class="w3-row w3-section w3-container w3-center" id="Greet" style="background-color:#74b5b1;padding:20px;">
+			  
+			   <h3 id="name"></h3><h5 id="role"></h5>
+			  
+		  </div>
+		  <div class="w3-row w3-section w3-container w3-center" style="background-color:#74b5b1;padding:20px;" id="tableConnected">
+				<span id="playerscon">Players Connected</span>
+			  <table class="w3-table w3-center" id="connected" >
+				
+				
+			  </table></br>
+			  <button class="w3-btn" style="background-color:#93e0a8;" id="startBtn">Start</button>
+			  <h2 id="word"></h2>
+			  
+			  <h3  id="timer"> </h3>
+			  <h5 id="drawer" class="w3-animate-left"></h5>
+			 
+			  
+		  </div>
+		    <div class="w3-row w3-section w3-container w3-center" style="background-color:#74b5b1;padding:20px;" id="divPoints">
+				<span id="playerscon">Score</span>
+			  <table class="w3-table w3-center" id="points" >
+				<tr><td>Words guessed</td><td id="wordGuessed"></td></tr>
+				<tr><td>Score</td><td id="score"></td></tr>
+				<tr><td>Drawing guessed</td><td id="drawingGuessed"></td></tr>
+			  </table>
+			 
+			  
+			 
+			  
+		  </div>
+		  
+   
+  </div>
+  
+  <div class="w3-col  s12 m12 l4 w3-center" >
+		<div class="w3-row w3-section w3-container w3-center">
+		<canvas id="myCanvas" height="300" width="308" style="border:1px solid #000000;background-color:white;">
+        </canvas>
+		</div>
+		<div class="w3-row w3-section w3-container w3-center">
+		<button id="clear" class="w3-btn" style="background-color:#74b5b1;">Clear</button>
+		</div>
+  </div>
+  
+  
+  <div class="w3-col  s12 m12 l4 w3-center">
+  <div class="w3-row w3-section w3-container">
+		  <div class="w3-container">
+		        <div class="w3-container" style="background-color:#74b5b1;padding:0.1px;" ><h3>Chat</h3></div>
+				<div class=" w3-border" id="chatbox" style="background-color:white">
+					
+				
+			
+				</div>
+				
+				  
+				<form action="">
+					<div class="w3-cell-row" style="width:100%">
+						<div class="w3-cell">
+						  <input id="m" autocomplete="off" class="w3-input w3-border w3-block" style="width:100%"/>
+						</div>
+						
+						<div class="w3-cell"> 
+						<button class="w3-btn" style="background-color:#74b5b1;width:100%">Send</button>
+						</div>
+					</div>
+				</form>
+		  </div>
+  </div>
+  </div>
+  
+  
+  
+
+  
+    </div>
+	<div class="w3-row" style="padding:5%;hover:none;" id="gameSet">
+		<div class="w3-col s12 m12 l4 w3-center w3-container" >
+		</div>
+		<div class="w3-col s12 m12 l4 w3-center w3-container" style="background-color:#74b5b1;padding:20px;">
+			
+		 
+			<div class="w3-row w3-section w3-container w3-center">
+				<h2>Join/Create Room</h2>
+			<input type="text" class="w3-input" id="roomName" required/></br>
+			<button id="enter" class="w3-btn" style="background-color:#93e0a8">Enter</button>
+			</div>
+			<div class="w3-row w3-section w3-container w3-center" id="roomControl">
+				<h6>This room has a game already running or all the members have just disconnected.</h6>
+			</div>
+			
+		</div>
+		<div class="w3-col s12 m12 l4 w3-center w3-container" >
+		</div>
+		
+	</div>
+	<div class="w3-row" style="padding:5%">
+	<div class="w3-col s12 m12 l4 w3-center w3-container" >
+		</div>
+		
+
+  
+  <div class="w3-col s12 m12 l4 w3-center w3-container" >
+		</div>
+  </div>
+</div>
+          
+    
+  </body>
+  
+  <script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+
+var c = document.getElementById("myCanvas");
+var context = c.getContext("2d");
+
+var clickX = new Array();
+var clickY = new Array();
+var clickDrag = new Array();
+var paint;
+var interval;
+
+
+function addClick(x, y, dragging)
+{
+  clickX.push(x);
+  clickY.push(y);
+  clickDrag.push(dragging);
+}
+
+function emptyArrays()
+{
+
+clickX.length=0;
+clickY.length=0;
+clickDrag.length=0;
+
+}
+
+
+
+
+function redraw(){
+  context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
+  context.strokeStyle = "#df4b26";
+  context.lineJoin = "round";
+  context.lineWidth = 5;
+			
+  for(var i=0; i < clickX.length; i++) {		
+    context.beginPath();
+    if(clickDrag[i] && i){
+      context.moveTo(clickX[i-1], clickY[i-1]);
+     }else{
+       context.moveTo(clickX[i]-1, clickY[i]);
+     }
+     context.lineTo(clickX[i], clickY[i]);
+     context.closePath();
+     context.stroke();
+  }
+  
+ 
+}
+
+
+
+
+
+
+ function processMsg(word,M){
+ 
+ 
+ if(word==M){
+ return true;
+
+ }else{
+ return false;
+ }
+ 
+ }
+  
+
+  $(function () {
+    
+	var socket=io.connect();
+	var newRoom;
+	var room;
+	
+	$('#create').click(function(){
+	    modal.style.display = "block";
+		$('#gameSet').hide();
+		$('#gameArea').show();
+		newRoom=$('#createRoomName').val();
+		socket.emit('room', newRoom);
+	});
+	
+	$('#enter').click(function(){
+		
+		
+		
+		room=$('#roomName').val();
+		socket.emit('room', room);
+		
+	});
+	
+	var taken=false;
+	socket.on('nameControl',function(x){
+	
+	taken=x;
+		if (taken){
+			$('#nameControl').show();
+		}else{
+			socket.emit('send-connected', $('#uname').val());
+			$('#nameControl').hide();
+			thisName=$('#uname').val();
+			$('#unameInput').hide();
+			$('#name').text($('#uname').val());
+			$('#Greet').show();
+			$('#tableConnected').show();
+			$('#uname').val('')
+		}
+	
+	
+	
+	
+	});
+	
+	var allow=false;
+	
+	socket.on('control',function(x){
+	allow=x;
+	console.log(allow);
+	
+	if (allow){
+	$('#roomControlmembers').hide();
+	$('#gameSet').hide();
+	$('#roomControl').hide();
+	$('#gameArea').show();
+	}else{
+	$('#roomControlmembers').hide();
+	$('#gameArea').hide();
+	$('#gameSet').show();
+	$('#roomControl').show();
+	emptyArrays();
+	clientPlayers.length=0;
+	role=null;
+	$('#role').hide();
+	$('#unameInput').show();
+	$('#divPoints').hide();
+	t=null;
+	$('#timer').hide();
+	$('#clear').show();
+    $('#spanword').hide();
+	$('#word').hide();
+	$('#Greet').hide();
+	$('#tableConnected').hide();
+	location.reload();
+	}
+	
+	});
+	
+	
+	
+    $('form').submit(function(){
+      socket.emit('chat message', {"msg":$('#m').val(),"time":t,"client":clientPlayers,"d":sketch});
+      $('#m').val('');
+      return false;
+    });
+	
+	$('#enter').click(function(){
+		$('#gameSet').hide();
+		$('#gameArea').show();
+	});
+	
+	$('#myCanvas').mousedown(function(e){
+	socket.emit('paint',true);
+	socket.emit('mousedown', {X:e.pageX - this.offsetLeft,Y:e.pageY - this.offsetTop,dragging:false});
+	redraw();
+	});
+	
+	socket.on('paint', function(p){
+	paint=p;
+	console.log(p);
+	});
+	
+	socket.on('mousedown', function(positiondown){
+	addClick(positiondown.X, positiondown.Y,positiondown.dragging);
+	redraw();
+	});
+
+	$('#myCanvas').mousemove(function(e){
+	  if(paint){
+		socket.emit('mousemove', {X:e.pageX - this.offsetLeft,Y:e.pageY - this.offsetTop,dragging:true});
+	  }
+	});
+	
+	socket.on('mousemove', function(positionmove){
+	 addClick(positionmove.X, positionmove.Y, positionmove.dragging);
+	 redraw();
+	});
+
+	$('#myCanvas').mouseup(function(e){
+	  socket.emit('paint',false);
+	});
+	
+	$('#clear').click(function(){
+	  socket.emit('clear', true);
+	});
+	
+	socket.on('clear', function(c){
+	if (c==true){
+	context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+	emptyArrays();
+	}
+	});
+
+	$('#myCanvas').mouseleave(function(e){
+	  socket.emit('paint',false);
+	});
+	
+	
+    socket.on('chat', function(msg){
+	
+	  if (msg.ans==true){
+		
+	   $('#chatbox').append($('<div class="w3-small w3-btn w3-animate-zoom" style="background-color:#638c6b;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" found the answer"));
+	     
+		
+	  }else if(msg.ans=="cheat"){
+		$('#chatbox').append($('<div class="w3-small w3-btn w3-animate-zoom" style="background-color:#ba574c;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" is trying to cheat!"));
+		
+	  }else if(msg.ans=="answered"){
+		$('#chatbox').append($('<div class="w3-small w3-btn w3-animate-zoom" style="background-color:#ba574c;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" already answered!"));
+		 
+	  }
+	  else{
+	  $('#chatbox').append($('<div class="w3-small w3-btn w3-animate-zoom" style="background-color:#a5a7a8;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+": "+msg.message));
+	 
+		}
+	  $('#chatbox').scrollTop($('#chatbox')[0].scrollHeight);
+	  
+    });
+	
+	var tableArray=[];
+	var thisName;
+	$("#btname").click(function(){
+    socket.emit('send-nickname', $('#uname').val());
+	
+    });
+	
+	socket.on('send-connected', function(n){
+		if(!n.leave){
+			for  (var i=0;i<n.length;i++){
+				
+				if (tableArray.indexOf(n[i].name,0)==-1){
+					tableArray.push(n[i].name);
+					
+						for (var j=tableArray.length-1;j<tableArray.length;j++){
+							$('#connected').append($('<tr><td>').text(tableArray[j]+" joined"));
+						}
+					
+				}
+			}
+		}
+		else{
+		
+				
+				
+					tableArray.push(n.Lname);
+					
+						for (var j=tableArray.length-1;j<tableArray.length;j++){
+							$('#connected').append($('<tr><td><font color="red"').text(tableArray[j]+" left"));
+						}
+					
+				
+			
+			
+		
+		}
+				
+			
+	});
+	
+	var stop=false;
+	socket.on('showStart',function(s){
+		if (s==true){
+			
+			$("#startBtn").show();
+			
+		}
+	});
+	
+	$("#score").text(0);
+	$("#wordGuessed").text(0);
+	$("#drawingGuessed").text(0);
+	
+
+	socket.on('score',function(score){
+	
+	clientPlayers=score.server;
+		$("#score").text(score.score);
+	
+		$("#wordGuessed").text(score.wguessed);
+		$("#drawingGuessed").text(score.dguessed);
+		
+		
+		
+	});
+	
+	var role;
+	socket.on('role',function(r){
+	
+	role=r.role;
+		if (r.role=='Guessor'){
+		
+		 $('#drawer').show();
+		 $('#clear').hide();
+		 $('#spanword').hide();
+		 $('#word').hide();
+		 $('#myCanvas').off('mousedown');
+		 $('#myCanvas').off('mousemove');
+		 $('#myCanvas').off('mouseup');
+		 
+		}else if(r.role=="Drawer"){
+		$('#clear').show();
+		$('#word').text(r.word);
+		$('#spanword').show();
+		$('#word').show();
+		$('#drawer').hide();
+		
+		
+		 $('#myCanvas').on('mousedown',function(e){
+			socket.emit('paint',true);
+			socket.emit('mousedown', {X:e.pageX - this.offsetLeft,Y:e.pageY - this.offsetTop,dragging:false});
+			redraw();
+			});
+		 $('#myCanvas').on('mousemove',function(e){
+			  if(paint){
+				socket.emit('mousemove', {X:e.pageX - this.offsetLeft,Y:e.pageY - this.offsetTop,dragging:true});
+			  }
+			});
+		 $('#myCanvas').on('mouseup',function(e){
+			  socket.emit('paint',false);
+			});
+		}
+		
+		$('#role').text(r.role);
+		$('#role').show();
+	
+	});
+	
+	$("#startBtn").click(function(){
+		socket.emit('startGame',{"round":round,"t":0});
+		
+		started=true;
+	});
+	
+	var clientPlayers=[];
+	var t;
+	var round=0;
+	var sketch;
+	var thisGame;
+	
+	socket.on('start',function(sg){
+		clientPlayers=sg.template;
+		
+		sketch=sg.d;
+		
+		if (sg.permit=="begin"){
+		$("#playerscon").hide();
+		$("#connected").hide();
+		$("#startBtn").hide();
+		context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+	    emptyArrays();
+		$('#divPoints').show();
+		$('#timer').show();
+		
+		
+		for (var i=0;i<clientPlayers.length;i++){
+			
+			if (clientPlayers[i].role=="Drawer"){
+				$('#drawer').text(clientPlayers[i].name+" is drawing...");
+			}
+		}
+		
+		
+		
+		
+		  
+		
+		if (started==true){
+		socket.emit('startTimer',{"t":60,"round":round});
+		started=false;
+		}
+		
+		}
+	
+	});
+	
+	
+	socket.on('win',function(T){
+	console.log("draw");
+	$('#role').text("You win!");
+	
+	
+	});
+	
+	socket.on('Lose',function(T){
+	console.log("draw");
+	$('#role').text("You lose!");
+	
+	
+	});
+	
+	
+	var started=false;
+	
+	
+	
+	socket.on('setTime',function(x){
+	t=x.t;
+	round=x.round;
+
+	
+
+	$('#timer').text(t+'s');
+	
+	if ((round==(clientPlayers.length*3))&&(t==0)){
+		 thisGame=false;
+		 t="Game Over!";
+		 $('#drawer').hide();
+		 $('#spanword').hide();
+		 $('#word').hide();
+		 $('#timer').text(t);
+		 
+		 
+		 var max=0;
+		
+		 var id;
+		 for (var i=0;i<clientPlayers.length;i++){
+			
+			if (clientPlayers[i].points>max){
+			max=clientPlayers[i].points;
+			id=clientPlayers[i].id;
+			
+			}
+		 
+		 }
+		 
+		 
+		 socket.emit('displayWin',{"msg":"You are the winner","id":id});
+		 
+		 for (var i=0;i<clientPlayers.length;i++){
+			if (clientPlayers[i].id!==id){
+			socket.emit('displayLose',{"msg":"You are the winner","id":clientPlayers[i].id});
+			}
+		 
+		 }
+		
+		 socket.emit('deleteRoom',true);
+		 
+	 }
+	 else if (((t==0)&&(round<(clientPlayers.length*3)))||(stop==true)){
+		
+	
+		  $('#spanword').hide();
+		  $('#word').hide();
+		  $('#drawer').hide();
+		  started=true;
+		  var c=clientPlayers;
+		  
+		  if (round<c.length-1||round==c.length-1){
+						 c[round].role="Drawer";
+						 c[round-1].role="Guessor";
+						 }
+						 else if ((round>c.length-1)&&(round<((c.length*2)-1)+1)){
+									var dummy=round-c.length;
+										if(dummy==0){
+										 c[dummy].role="Drawer";
+										 c[dummy+(c.length-1)].role="Guessor";
+										 }
+										 else
+										 {
+										 c[dummy].role="Drawer";
+										 c[dummy-1].role="Guessor";
+										 
+										 }
+								}
+								 else if (round>((c.length*2)-1)){
+									var dummy=round-(c.length*2);
+										if(dummy==0){
+										 c[dummy].role="Drawer";
+										 c[dummy+(c.length-1)].role="Guessor";
+										 }
+										 else
+										 {
+										 c[dummy].role="Drawer";
+										 c[dummy-1].role="Guessor";
+										 
+										 }
+									
+									}
+		  
+		  
+		  
+								for (var i=0;i<c.length;i++){
+								
+									if (c[i].role=="Drawer"){
+									
+										if (c[i].name==thisName){
+										
+											t="Round "+((round+1))+": Click to draw!";
+											$('#timer').text(t);
+												$('#timer').click(function(){
+												 socket.emit('startGame',{"round":round,"t":0,"client":clientPlayers});
+												});
+										
+										
+										}else{
+										
+										t="Round "+((round+1));
+										$('#timer').text(t);
+											$('#timer').off("click");
+																	
+										
+										
+										}
+									
+									
+									
+									}
+								
+								
+								
+								}
+		  
+		  
+		   
+	 }
+	
+	  
+	 
+	});
+	
+
+	
+	
+	<!-- socket.on('timeover',function(timing){ -->
+	 <!-- console.log("7"); -->
+		
+		<!-- if (timing.type=="end"){ -->
+		 
+		
+		<!-- } -->
+		<!-- else if (timing.type=="endOfRound"){ -->
+					
+					
+					 
+						 <!-- if (round<clientPlayers.length-1||round==clientPlayers.length-1){ -->
+						 <!-- clientPlayers[round].role="Drawer"; -->
+						 <!-- clientPlayers[round-1].role="Guessor"; -->
+						 <!-- } -->
+						 <!-- else if ((round>clientPlayers.length-1)&&(round<((clientPlayers.length*2)-1)+1)){ -->
+									<!-- var dummy=round-clientPlayers.length; -->
+										<!-- if(dummy==0){ -->
+										 <!-- clientPlayers[dummy].role="Drawer"; -->
+										 <!-- clientPlayers[dummy+(clientPlayers.length-1)].role="Guessor"; -->
+										 <!-- } -->
+										 <!-- else -->
+										 <!-- { -->
+										 <!-- clientPlayers[dummy].role="Drawer"; -->
+										 <!-- clientPlayers[dummy-1].role="Guessor"; -->
+										 
+										 <!-- } -->
+								<!-- } -->
+								 <!-- else if (round>((clientPlayers.length*2)-1)){ -->
+									<!-- var dummy=round-(clientPlayers.length*2); -->
+										<!-- if(dummy==0){ -->
+										 <!-- clientPlayers[dummy].role="Drawer"; -->
+										 <!-- clientPlayers[dummy+(clientPlayers.length-1)].role="Guessor"; -->
+										 <!-- } -->
+										 <!-- else -->
+										 <!-- { -->
+										 <!-- clientPlayers[dummy].role="Drawer"; -->
+										 <!-- clientPlayers[dummy-1].role="Guessor"; -->
+										 
+										 <!-- } -->
+									
+									<!-- } -->
+					   
+								
+						 
+					 
+		
+				<!-- } -->
+				
+	<!-- }); -->
+
+	
+	
+
+  });
+  
+  // Get the modal
+
+
+
+// When the user clicks anywhere outside of the modal, close it
+
+
+</script>
+</html>
