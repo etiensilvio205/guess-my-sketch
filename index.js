@@ -512,17 +512,6 @@ socket.on('mousedown', function(positiondown){
 
 	
 });
-
-io.configure(function () {  
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
-});
-
-var port = process.env.PORT || 5000; 
-http.listen(port, function(){
-  console.log('listening on *:5000');
-  
-});
 	
 
 app.get('/', function(req, res){
