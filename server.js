@@ -518,8 +518,11 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
-http.listen(3000, function(){
-  console.log('listening on *:3000');
+var server_port = process.env.YOUR_PORT || process.env.PORT || 80;
+var server_host = process.env.YOUR_HOST || '0.0.0.0';
+
+http.listen(server_port,server_host, function(){
+  console.log('listening on'+server_port);
 });
 
 
