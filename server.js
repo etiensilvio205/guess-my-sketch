@@ -1,28 +1,171 @@
 
-var app = require('express')();
+var express = require('express');
+var app=express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var EventEmitter = require("events").EventEmitter;
-
+var path = require('path');
 
 
 var user;
 var users=[];
 
-var words=["UMBRELLA","BOTTLE","MOUSE","TELEVISION","BEACH","MOUNTAIN","TELEPHONE","APPLE","ORANGE","FISH","HOUSE","INTERNET","WALLET","RAINBOW"];
+var wordsFrench=[
+"En colere",
+"Feux d'artifice",
+"Citrouille",
+"Bebe",
+"Fleur",
+"arc en ciel",
+"Barbe",
+"Soucoupe volante",
+"Recycler",
+"Bible",
+"Girafe",
+"Chateau de sable",
+"Bikini",
+"Des lunettes",
+"Flocon de neige",
+"Livre",
+"Talon haut",
+"Escaliers",
+"Seau",
+"Cornet de glace",
+"Etoile de mer",
+"Bumble bee",
+"Iglou",
+"fraise",
+"Papillon",
+"Lady bug",
+"Soleil",
+"Camera",
+"Lampe",
+"Pneu",
+"Chat",
+"Lion",
+"Pain grille",
+"Eglise",
+"Boites aux lettres",
+"Brosse a dents",
+"Crayon",
+"Nuit",
+"Dentifrice",
+"Dauphin",
+"Nez",
+"un camion",
+"Oeuf",
+"Jeux olympiques",
+"Volley-ball",
+"tour Eiffel",
+"Cacahuete",
+"Cerveau",
+"Chaton",
+"Cour de recreation",
+"Bain moussant",
+"kiwi",
+"Tarte à la citrouille",
+"Boucle",
+"Rouge a levres",
+"Goutte de pluie",
+"Autobus",
+"Homard",
+"Robot",
+"Accident de voiture",
+"Sucette",
+"Chateau de sable",
+"Chateau",
+"Aimant",
+"Pantoufle",
+"Tronçonneuse",
+"Megaphone",
+"Boule de neige",
+"Tente de cirque",
+"Sirene",
+"Arroseur",
+"Ordinateur",
+"Minivan",
+"Statue de la Liberte",
+"Lit de bebe",
+"Mont Rushmore",
+"Tetard",
+"Dragon",
+"La musique",
+"Tipi",
+"Haltere",
+"Pole Nord",
+"Telescope",
+"Anguille",
+"Infirmiere",
+"Train",
+"grande roue",
+"Hibou",
+"Tricycle",
+"Drapeau",
+"Sucette",
+"Tutu",
+"Courrier indesirable",
+"Piano",
+"Siege arriere",
+"Chaise haute",
+"Groupe de rock",
+"Anniversaire",
+"Le hockey",
+"Sasquatch",
+"Trou noir",
+"Un hotel",
+"Oeufs brouilles",
+"Blizzard",
+"Corde a sauter",
+"Ceinture de securite",
+"Burrito",
+"Koala",
+"Sauter",
+"Capitaine",
+"Lutin",
+"Eclipse solaire",
+"Lustre",
+"Lumiere",
+"Espace",
+"Lit de bebe",
+"Masque",
+"Stethoscope",
+"Bateau de croisiere",
+"Mecanicien",
+"Cigogne",
+"Danse",
+"Maman",
+"Coup de soleil",
+"Deodorant",
+"Monsieur Potato Head",
+"Fil",
+"Facebook",
+"Collants",
+"Touristique",
+"Appartement",
+"Assiette en papier",
+"Etats Unis",
+"Cadre",
+"Photo",
+"WIFI",
+"Pleine lune",
+"Pilgram",
+"Zombie",
+"Jeu",
+"Pirate"];
 
+var wordsEng=["Angry","Fireworks","Pumpkin","Baby","Flower","Rainbow","Beard","Flying Saucer","Recycle","Bible","Giraffe","SandCastle","Bikini","Glasses","Snowflake","Book","High Heel","Stairs","Bucket","IceCornet","Starfish","Bumble bee","Iglou","strawberry","Butterfly","Ladybug","Sun","Camera","Lamp","Tire","Cat","Lion","Toast","Church","Mailbox","Toothbrush","Pencil","Night","Toothpaste","Dolphin","Nose","Truck","Egg","Olympic Games","Volleyball","Eiffel Tower","Peanut","Brain","Kitten","Playground","Bubble Bath","Kiwi","Pumpkin Pie","Loop","Lipstick","Rain drop","Bus","Lobster","Robot","Car Accident","Lollipop","SandCastle","Castle","Magnet","Slipper","Chainsaw","Megaphone","Snowball","Circus Tent","Mermaid","Sprinkler","Computer","Minivan","Statue of Liberty","Crib","Mount Rushmore","Tadpole","Dragon","Music","Tipi","Dumb bell","North Pole","Telescope","Eel","Nurse","Train","Ferris wheel","Owl","Tricycle","Flag","Lollipop","Tutu","Junk","Piano","BackSeat","HighChair","Rock Band","Anniversary","Hockey","Sasquatch","BlackHole","Hotel","Scrambled Eggs","Blizzard","Skipping Rope","Seat Belt","Burrito","Koala","Jumping","Captain","Goblin","Solar Eclipse","Chandelier","Light","Space","Crab","Mask","Stethoscope","CruiseShip","Mechanic","Stork","Dance","Mom","Sunburn","Deodorant","Mr. Potato Head","Fil","Facebook","Tights","Tourist","Apartment","Paper Plate","United States","Frame","Photo","WIFI","FullMoon","Pilgram","Zombie","Game","Pirate"];
 function drawing(word,duration){
 	this.word=word;
 	this.duration=duration;
 	
 }
 
-function game(players,drawing){
+function game(players,drawing,language){
 	this.players=players;
 	this.winner='';
 	this.losers=[];
 	this.drawing=drawing;
-	
+	this.language=language;
 	
 }
 
@@ -36,6 +179,7 @@ function player(name,id,room,role){
 	this.wordguessed=0;
 	this.drawingguessed=0;
 	this.answered=false;
+	this.browser="eng";
 	
 }
 
@@ -60,10 +204,13 @@ var arrays=[];
 
 
 io.on('connection', function(socket){ 
-socket.on('send-nickname', function(nickname) {
-	
-	
+socket.on('send-nickname', function(n) {
 	var found=false;
+	var nickname=n.name;
+	
+
+	
+	
 	              var roomCheck=Object.keys(socket.rooms).filter(item => item!=socket.id)[0];
 					var connected=[];
 					for (socketID in io.nsps['/'].adapter.rooms[roomCheck].sockets) {
@@ -72,17 +219,26 @@ socket.on('send-nickname', function(nickname) {
 							connected.push(new player(nm,nmi,roomCheck,"Guessor"));
 					  }
 		
-		
+	if (nickname!=''){	
 		for (var i=0;i<connected.length;i++){
-			if(connected[i].name==nickname){
-				found=true;
-				break;
-			}
+			
+				if(connected[i].name==nickname){
+					found=true;
+					break;
+				}
 		}
+	}else{
+	found=true;
+	}
 
-	if (found==false){
+	if ((found==false)){
 		socket.nickname=nickname;
 		io.to(socket.id).emit('nameControl',found);
+		
+		if (connected.length==1){
+		socket.language=n.language;	
+		
+		}
 		
 		if (connected.length>1){
 			io.sockets.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('showStart',true);
@@ -109,7 +265,7 @@ if(typeof io.nsps['/'].adapter.rooms[r]!='undefined'){
 						io.to(socket.id).emit('control',true); 
 					
 					}else{
-						io.to(socket.id).emit('control',"errorMsg");
+						io.to(socket.id).emit('control',false);
 					}
 					  // if (socket.rooms.active==true){
 							// io.to(socket.id).emit('control',false);
@@ -166,7 +322,11 @@ socket.on('startGame',function(sg){
 					var connected=[];
 					for (socketID in io.nsps['/'].adapter.rooms[roomCheck].sockets) {
 						const nm = io.nsps['/'].connected[socketID].nickname;
-						const nmi = io.nsps['/'].connected[socketID].id;			
+						const nmi = io.nsps['/'].connected[socketID].id;
+
+						if(typeof io.nsps['/'].connected[socketID].language !='undefined'){
+							var lang=io.nsps['/'].connected[socketID].language;
+						}							
 							connected.push(new player(nm,nmi,roomCheck,"Guessor"));
 					  }
 			
@@ -235,7 +395,12 @@ socket.on('startGame',function(sg){
 					var connected=[];
 					for (socketID in io.nsps['/'].adapter.rooms[roomCheck].sockets) {
 						const nm = io.nsps['/'].connected[socketID].nickname;
-						const nmi = io.nsps['/'].connected[socketID].id;			
+						const nmi = io.nsps['/'].connected[socketID].id;	
+						
+						if(typeof io.nsps['/'].connected[socketID].language !='undefined'){
+							var lang=io.nsps['/'].connected[socketID].language;
+						}	
+						
 							connected.push(new player(nm,nmi,roomCheck));
 					  }
 					
@@ -247,9 +412,15 @@ socket.on('startGame',function(sg){
 		
 		        }
 		
-		
-		
-		 var adrawing=new drawing(words[Math.floor(Math.random() * words.length)],30);
+		console.log(lang);
+		if (lang=='fr'){
+			
+			var adrawing=new drawing(wordsFrench[Math.floor(Math.random() * wordsFrench.length)],60);
+		}else{
+			
+			var adrawing=new drawing(wordsEng[Math.floor(Math.random() * wordsEng.length)],60);
+		}
+		 
 		var myGame=new game(connected,adrawing);
 		
 		
@@ -408,7 +579,7 @@ if (connected.length==2){
 	let roomObj = io.nsps['/'].adapter.rooms[roomCheck];
         Object.keys(roomObj.sockets).forEach(function(id) {
             io.sockets.connected[id].leave(roomCheck);
-			console.log("completed");
+			
         })
     
 }
@@ -422,9 +593,21 @@ socket.on('chat message', function(m){
 	
 	
 	var connected=m.client;
-	  
-	var treated=m.msg.toUpperCase();
-	var sketch=m.d.word;
+	var falser='';
+	var treatedd=m.msg.toUpperCase();
+	var treated=treatedd.replace(/\s/g,'');
+	var sketchd=m.d.word.toUpperCase();
+	var sketch=sketchd.replace(/\s/g,'');
+	
+	for (var i=0;i<connected.length;i++){
+		if(socket.nickname==connected[i].name){
+			falser=connected[i].points;
+			break;
+		}
+		
+	}
+	
+	
 	if(m.time>0){
 		
 		if (processMsg(sketch,treated)==true){
@@ -433,7 +616,7 @@ socket.on('chat message', function(m){
 				if(connected[i].role=="Drawer"){
 					
 					if (connected[i].name==socket.nickname){
-						io.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('chat',{"nkname":socket.nickname,"message":m.msg,"ans":"cheat"});
+						io.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('chat',{"nkname":socket.nickname,"message":m.msg,"ans":"cheat","points":connected[i].points});
 						
 					}
 					else if((connected[i].name!==socket.nickname)&&(connected[i].answered==false)){
@@ -443,13 +626,13 @@ socket.on('chat message', function(m){
 								connected[i].drawingguessed=connected[i].drawingguessed+1;
 								connected[i].answered=true;
 								io.to(connected[i].id).emit('score',{"wguessed":connected[i].wordguessed,"score":connected[i].points,"dguessed":connected[i].drawingguessed});
-								io.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('chat',{"nkname":socket.nickname,"message":m.msg,"ans":true});
+								io.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('chat',{"nkname":socket.nickname,"message":m.msg,"ans":true,"points":connected[i].points});
 						
 					
 				    }else if((connected[i].name!==socket.nickname)&&(connected[i].answered==true)){
 						
 								
-						io.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('chat',{"nkname":socket.nickname,"message":m.msg,"ans":"answered"});
+						io.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('chat',{"nkname":socket.nickname,"message":m.msg,"ans":"answered","points":connected[i].points});
 						
 					}
 				
@@ -480,7 +663,7 @@ socket.on('chat message', function(m){
 
 		}
 		else{
-		  io.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('chat',{nkname:socket.nickname,message:m.msg,ans:false});
+		  io.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('chat',{"nkname":socket.nickname,"message":m.msg,"ans":false,"points":falser});
 		}
 		
 	
@@ -492,8 +675,9 @@ socket.on('chat message', function(m){
 	});
 
 	
-socket.on('mousedown', function(positiondown){
-	io.sockets.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('mousedown',positiondown);
+	socket.on('mousedown', function(positiondown){
+	io.sockets.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('mdown',positiondown);
+	
 	});
 
 	socket.on('paint', function(paint){
@@ -501,7 +685,9 @@ socket.on('mousedown', function(positiondown){
 	});
 
 	socket.on('mousemove', function(positionmove){
-	io.sockets.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('mousedown',positionmove);
+	io.sockets.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('mmove',positionmove);
+	
+	
 	});
 	
 	socket.on('clear', function(c){
@@ -509,13 +695,27 @@ socket.on('mousedown', function(positiondown){
 	io.sockets.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('clear',c);
 	});
 	
+	socket.on('addColor',function(col){
+		
+	io.sockets.to(Object.keys(socket.rooms).filter(item => item!=socket.id)[0]).emit('pushColor',col);
+	});
+	
 
 	
 });
 	
+app.use(express.static(path.join(__dirname, '/public')));
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+  
+  var lang=req.headers["accept-language"][0]+req.headers["accept-language"][1];
+  
+  if (lang=="fr"){
+	 res.sendFile(__dirname + '/views/IndexFR.html');
+  }else{
+	  
+	 res.sendFile(__dirname + '/views/Index.html');   
+  }
 });
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 80;
