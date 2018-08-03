@@ -711,10 +711,10 @@ app.get('/', function(req, res){
   var lang=req.headers["accept-language"][0]+req.headers["accept-language"][1];
   
   if (lang=="fr"){
-	 res.sendFile(__dirname + '/views/IndexFR.html');
+	 res.sendFile(__dirname + '/views/indexFR.html');
   }else{
 	  
-	 res.sendFile(__dirname + '/views/Index.html');   
+	 res.sendFile(__dirname + '/views/index.html');   
   }
 });
 
