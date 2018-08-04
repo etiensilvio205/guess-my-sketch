@@ -37,6 +37,24 @@ clickColor.length=0;
 
 
 
+window.requestAnimFrame = (function (callback) {
+        return window.requestAnimationFrame || 
+           window.webkitRequestAnimationFrame ||
+           window.mozRequestAnimationFrame ||
+           window.oRequestAnimationFrame ||
+           window.msRequestAnimaitonFrame ||
+           function (callback) {
+        window.setTimeout(callback, 1000/60);
+           };
+})();
+
+
+// Allow for animation
+(function drawLoop () {
+  requestAnimFrame(drawLoop);
+  redraw();
+})();
+
 
 
 
@@ -165,7 +183,7 @@ function redraw(){
 	$('#score').hide();
 	t=null;
 	$('#timer').hide();
-	$('#palette').show();
+	$('#palette').css("display", "block");
     $('#spanword').hide();
 	$('#word').hide();
 	$('#Greet').hide();
@@ -199,12 +217,14 @@ function redraw(){
 	var touch=e.originalEvent.touches[0];
 	socket.emit('mousedown', {"X":touch.pageX - this.offsetLeft,"Y":touch.pageY - this.offsetTop,"dragging":false});
 	e.preventDefault();
+	 e.stopPropagation();
 	
 	});
 	
 	$('#myCanvas').on('touchend',function(e){
 	socket.emit('paint',false);
 	e.preventDefault();
+	 e.stopPropagation();
 	});
 	
 	$('#myCanvas').on('touchmove',function(e){
@@ -212,6 +232,7 @@ function redraw(){
 		var touch=e.originalEvent.touches[0];
 		socket.emit('mousemove', {X:touch.pageX - this.offsetLeft,Y:touch.pageY - this.offsetTop,"dragging":true});
 		e.preventDefault();
+		 e.stopPropagation();
 	  }
 	});
 	
@@ -228,9 +249,10 @@ function redraw(){
 		
 	  
 	  	$('#black').click(function(){
-			RandomWord();
+			
 			socket.emit('addColor',"black");	
 	    });
+		
 		
 		$('#white').click(function(){
 			
@@ -243,7 +265,6 @@ function redraw(){
 		
 		socket.on('pushColor',function(c){
 			
-			
 			curColor=c;
 			
 		});
@@ -255,7 +276,7 @@ function redraw(){
 	socket.on('mdown', function(positiondown){
 		
 	addClick(positiondown.X, positiondown.Y,positiondown.dragging,positiondown.color);
-	redraw();
+	
 	});
 
 	$('#myCanvas').mousemove(function(e){
@@ -267,7 +288,7 @@ function redraw(){
 	socket.on('mmove', function(positionmove){
 		
 	 addClick(positionmove.X, positionmove.Y, positionmove.dragging,positionmove.color);
-	 redraw();
+	
 	});
 
 	$('#myCanvas').mouseup(function(e){
@@ -275,6 +296,7 @@ function redraw(){
 	});
 	
 	$('#clear').click(function(){
+		
 	  socket.emit('clear', true);
 	});
 	
@@ -294,29 +316,59 @@ function redraw(){
 	
 	  if (msg.ans==true){
 		if((window.navigator.userLanguage || window.navigator.language)=='fr'){
-			$('#chatbox').append($('<div class="w3-small w3-btn w3-animate-zoom" style="background-color:#638c6b;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" a trouvé la réponse!"));
+			$('#chatbox').append($('<div class="w3-small w3-btn w3-animate-down" style="background-color:#638c6b;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:2px;"></div>').text(msg.nkname+" a trouvé la réponse!"));
+		
+		if (($("#chatbox > div").length)>0){
+			
+			$('#chatbox').empty();
+		}
 		}else{
-	   $('#chatbox').append($('<div class="w3-small w3-btn w3-animate-zoom" style="background-color:#638c6b;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" found the answer!"));
+	   $('#chatbox').append($('<div class="w3-small w3-btn w3-animate-down" style="background-color:#638c6b;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" found the answer!"));
+		if (($("#chatbox > div").length)>0){
+			
+			$('#chatbox').empty();
+		}
+		
 		}
 		//$('#chatbox').append($('<div class="w3-small w3-btn w3-animate-zoom" style="background-color:#638c6b;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').append(msg.nkname+'<span class="w3-badge w3-left">'+msg.points+"</span> found the answer"));
 	  }else if(msg.ans=="cheat"){
 		  if((window.navigator.userLanguage || window.navigator.language)=='fr'){
 			 $('#chatbox').append($('<div class="w3-small w3-btn w3-animate-zoom" style="background-color:#ba574c;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" essaie de tricher!"));
 		   
+		   if (($("#chatbox > div").length)>0){
+			
+			$('#chatbox').empty();
+		}
 		  }else{
-		$('#chatbox').append($('<div class="w3-small w3-btn w3-animate-zoom" style="background-color:#ba574c;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" is trying to cheat!"));
+		$('#chatbox').append($('<div class="w3-small w3-btn w3-animate-down" style="background-color:#ba574c;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" is trying to cheat!"));
+		  if (($("#chatbox > div").length)>0){
+			
+			setTimeout(function(){$('#chatbox').empty();},3000);
+		}
+		  
 		  }
 	  }else if(msg.ans=="answered"){
 		  if((window.navigator.userLanguage || window.navigator.language)=='fr'){
-			 $('#chatbox').append($('<div class="w3-small w3-btn w3-animate-zoom" style="background-color:#ba574c;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" a déjà répondu!"));
-		 
+			 $('#chatbox').append($('<div class="w3-small w3-btn w3-animate-down" style="background-color:#ba574c;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" a déjà répondu!"));
+		 if (($("#chatbox > div").length)>0){
+			
+			setTimeout(function(){$('#chatbox').empty();},3000);
+		}
 		  }else{
-		$('#chatbox').append($('<div class="w3-small w3-btn w3-animate-zoom" style="background-color:#ba574c;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" already answered!"));
-		  }
+		$('#chatbox').append($('<div class="w3-small w3-btn w3-animate-down" style="background-color:#ba574c;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+" already answered!"));
+		 if (($("#chatbox > div").length)>0){
+			
+			setTimeout(function(){$('#chatbox').empty();},3000);
+		}
+
+		 }
 	  }
 	  else{
-	  $('#chatbox').append($('<div class="w3-small w3-btn w3-animate-zoom" style="background-color:#a5a7a8;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+": "+msg.message));
-	 
+	  $('#chatbox').append($('<div class="w3-small w3-btn w3-animate-down" style="background-color:#a5a7a8;color:white;width:100%;text-align:left;border-radius:3px;margin-bottom:3px;"></div>').text(msg.nkname+": "+msg.message));
+	 if (($("#chatbox > div").length)>0){
+			
+			setTimeout(function(){$('#chatbox').empty();},3000);
+		}
 		}
 	  $('#chatbox').scrollTop($('#chatbox')[0].scrollHeight);
 	  
@@ -454,7 +506,7 @@ function redraw(){
 		if (r.role=='Guessor'){
 		
 		 $('#drawer').show();
-		 $('#palette').hide();
+		 $('#palette').css("display", "none");
 		 $('#spanword').hide();
 		 $('#word').hide();
 		 $('#myCanvas').off('mousedown');
@@ -465,7 +517,7 @@ function redraw(){
 		 $('#myCanvas').off('touchend');
 		 
 		}else if(r.role=="Drawer"){
-		$('#palette').show();
+		$('#palette').css("display", "block");
 		$('#word').text('"'+r.word+'"');
 		$('#spanword').show();
 		$('#word').css({"display":"block"});
@@ -475,7 +527,7 @@ function redraw(){
 		 $('#myCanvas').on('mousedown',function(e){
 			socket.emit('paint',true);
 			socket.emit('mousedown', {X:e.pageX - this.offsetLeft,Y:e.pageY - this.offsetTop,dragging:false});
-			redraw();
+			
 			});
 		 $('#myCanvas').on('mousemove',function(e){
 			  if(paint){
