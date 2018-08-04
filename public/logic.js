@@ -42,7 +42,7 @@ clickColor.length=0;
 
 
 function redraw(){
-  context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
+  //context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
   //context.strokeStyle = "#df4b26";
   context.lineJoin = "round";
   context.lineWidth = 5;
@@ -199,12 +199,13 @@ function redraw(){
 	var touch=e.originalEvent.touches[0];
 	socket.emit('mousedown', {"X":touch.pageX - this.offsetLeft,"Y":touch.pageY - this.offsetTop,"dragging":false});
 	e.preventDefault();
-	
+	e.stopPropagation();
 	});
 	
 	$('#myCanvas').on('touchend',function(e){
 	socket.emit('paint',false);
 	e.preventDefault();
+	e.stopPropagation();
 	});
 	
 	$('#myCanvas').on('touchmove',function(e){
@@ -212,6 +213,7 @@ function redraw(){
 		var touch=e.originalEvent.touches[0];
 		socket.emit('mousemove', {X:touch.pageX - this.offsetLeft,Y:touch.pageY - this.offsetTop,"dragging":true});
 		e.preventDefault();
+		  e.stopPropagation();
 	  }
 	});
 	
