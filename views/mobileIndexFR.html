@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<title>Game mobile version</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3mobile.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet"  href="/css/UIMobile.css">
+<body>
+<nav class="w3-sidebar w3-bar-block w3-card w3-animate-left" id="mySidebar" >
+<div >
+<a class="w3-bar-item w3-button" onclick="quit()" style="margin-top:auto;padding:10px;">Quitter</a>
+<a class="w3-bar-item w3-button" href="https://github.com/etiensilvio205" style="margin-top:auto;padding:10px; ">GitHub</a>
+</div>
+</nav>
+<div id="gameArea">
+
+
+<header class="w3-top w3-bar w3-theme w3-center">
+<div class="w3-row">
+	<div class="w3-col" style="width:10%">
+	  <button class="w3-bar-item w3-button w3-xxlarge w3-mobile w3-hover-theme" style="outline:none;" onclick="openSidebar()">&#9776;</button>
+	</div>
+	
+	<div class="w3-rest">
+
+		
+		<!--<h5 id="role"></h5>-->
+		<div class="w3-row w3-section w3-container" >
+				  <div id="unameInput" class="w3-container w3-center">
+				  <input type="text" id="uname" placeholder="Nom d'utilisateur" class="w3-input"></br>
+				  <button class="w3-btn w3-theme w3-border w3-padding-small" id="btname" >Entrer</button>
+				  <h6 id="nameControl">Ce nom d'utilisateur est déjà pris ou a été vide. Merci de ré-essayer!</h6>
+				  </div>
+				  <div class="w3-col" id="Greet" style="width:50%">
+				  <span id="name" class="w3-left"> </span>&nbsp;&nbsp;
+				  <span class="w3-badge w3-left" id="score"></span></br>
+				  <span id="word" class="w3-left"></span>
+				  <h5 id="drawer" class="w3-animate-left w3-left"></h5> 
+				  </div>
+				  <div class="w3-rest" id="divTime">
+				  <span  id="timer"> </span>
+				  </div>
+		</div>
+	</div>
+</div>
+
+</header>
+
+<div class="w3-container w3-cell-row" style="margin-top:70px">
+	
+	
+		<div class="w3-row w3-section w3-container w3-center"  id="tableConnected">
+				<span id="playerscon">Joueurs connectés</span>
+				  <table class="w3-table w3-center" id="connected" >
+					
+					
+				  </table></br>
+				  <button class="w3-btn w3-theme w3-border w3-padding-small" id="startBtn" >Commencer</button>
+		 </div>
+		 <div class="w3-row" id="playground">
+			<div class="w3-col w3-mobile"> 
+			
+				<div class="w3-row w3-section w3-center ">
+				<canvas id="myCanvas" height="300" width="308" style="border:1px solid #000000;background-color:white;">
+				</canvas>
+				</div>
+				
+				<div class="w3-row w3-container w3-light-grey w3-section w3-center" id="palette">
+				
+				  <span class="w3-bar-item w3-badge w3-large w3-btn" id="black" value="black" ></span>&nbsp;
+				  <span class="w3-bar-item w3-badge w3-large w3-btn" id="red" value="red" ></span>&nbsp;
+				  <span class="w3-bar-item w3-badge w3-large w3-btn" id="orange" value="orange"  ></span>&nbsp;
+				  <span class="w3-bar-item w3-badge w3-large w3-btn" id="yellow" value="yellow" ></span>&nbsp;
+				  <span class="w3-bar-item w3-badge w3-large w3-btn" id="blue" value="blue" ></span>&nbsp;
+				  <span class="w3-bar-item w3-badge w3-large w3-btn" id="violet" value="violet" ></span>&nbsp;
+				  <span class="w3-bar-item w3-large w3-btn" id="white" value="white" ><i class="fa fa-eraser"></i></span>&nbsp;
+				  <span class="w3-bar-item w3-large w3-btn" id="clear" ><i class="fa fa-close"></i></span>
+				</div>
+					
+				<div class="w3-row w3-section w3-center w3-animate-down" id="achievement">
+				<span class="fa fa-star"></span>Vous avez dévérouiller des nouvelles couleurs!<span class="fa fa-star"></span>
+				</div>
+				
+	
+				
+			</div>  
+	
+		</div>
+		
+	
+	 
+
+</div>
+
+<!--enter room, user-->
+
+
+
+<footer class="w3-bottom w3-margin-top">
+<div id="chatbox" style="background-color:none;">
+					
+				
+			
+</div>
+  	<form action="">
+					<div class="w3-row">
+						<div class="w3-col" style="width:70%">
+						  <input id="m" autocomplete="off" class="w3-input w3-border w3-block"/>
+						</div>
+						
+						
+						<button class="w3-rest w3-btn w3-theme" style="height:40px;width:30%;" >Envoyer</button>
+						
+					</div>
+				</form>
+  
+  
+  
+  
+</footer>
+</div>
+<div class="w3-row w3-mobile w3-center"  id="gameSet">
+		
+		<div id="roomSet" class="w3-cell-middle w3-container w3-theme" style="padding:20px;margin-top:90px">
+				<div class="w3-row w3-container w3-center">
+				<span style="font-family:Courier New, monospace;font-size:20px;">Guess My Sketch</span><img src="pb.png" width="50px"/>
+				</div>
+		 
+			<div class="w3-row w3-section w3-container w3-center">
+				<h2 id="join">Rejoindre/Créer une salle</h2>
+			<input type="text" class="w3-input" id="roomName" required/></br>
+			<button id="enter" class="w3-btn w3-theme w3-border w3-padding-small">Entrer</button>
+			</div>
+			<div class="w3-row w3-section w3-container w3-center w3-animate-left" id="roomControl">
+				 Erreur <span class="fa fa-ban "></span></br>Essayez une autre salle.</br>La page va se recharger dans 3s.
+			</div>
+			
+			<div class="w3-row w3-section w3-container w3-center">
+			<label id="labelIns">Instructions &#x2b;</label>
+			<footer class="w3-footer" id="version">Guess My Sketch V2.0 <b>par</b> Etienne Silvio <br>Retrouvez mes codes ici <a href="https://github.com/etiensilvio205"><i class="fa fa-github" style="font-size:20px"></i></a></footer>
+			<div id="instructions" class="w3-animate-left">
+			<p>Pour jouer, entrez une salle et cliquez sur "Entrer" pour la rejoindre afin d'integrer la partie respective.</p>
+			<p>Si vous n'avez pas de salle, pas de soucis! il vous suffit d'entrer un nom de salle aléatoire et si elle n'est pas prise, une salle de jeux vous sera créée et vous pourrez la partager avec vos amis!</p>
+			<p>NOTE: Vous devez avoir 2 joueurs pour commencer une partie.</p>
+			</div>
+			</div>
+			
+			
+			
+		</div>
+		
+		
+</div>
+
+
+
+<script>
+closeSidebar();
+
+function quit(){
+location.reload();
+
+}
+
+function about(){
+$('#gameArea').hide();
+$('#aboutText').show();
+}
+
+
+function openSidebar() {
+   
+	
+	if (document.getElementById("mySidebar").style.display == "block"){
+	 document.getElementById("gameArea").style.marginLeft = "0%";
+     document.getElementById("mySidebar").style.display = "none";
+	}else{
+	 document.getElementById("gameArea").style.marginLeft = "20%";
+   document.getElementById("mySidebar").style.width = "20%";
+	document.getElementById("mySidebar").style.display = "block";
+	}
+}
+
+function closeSidebar() {
+    document.getElementById("mySidebar").style.display = "none";
+}
+</script>
+
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="/mobileLogic.js"></script>
+</html>
