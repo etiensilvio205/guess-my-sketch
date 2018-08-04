@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
 <title>Game mobile version</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta 
+     name='viewport' 
+     content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' 
+/>
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3mobile.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -48,7 +51,7 @@
 
 </header>
 
-<div class="w3-container w3-cell-row" style="margin-top:80px">
+<div class="w3-container w3-cell-row" style="margin-top:50px">
 	
 	
 		<div class="w3-row w3-section w3-container w3-center"  id="tableConnected">
@@ -62,12 +65,7 @@
 		 <div class="w3-row" id="playground">
 			<div class="w3-col w3-mobile"> 
 			
-				<div class="w3-row w3-section w3-center ">
-				<canvas id="myCanvas" height="300" width="308" style="border:1px solid #000000;background-color:white;">
-				</canvas>
-				</div>
-				
-				<div class="w3-row w3-container w3-light-grey w3-section w3-center" id="palette">
+			<div class="w3-row w3-container w3-light-grey w3-section w3-center" id="palette">
 				
 				  <span class="w3-bar-item w3-badge w3-large w3-btn" id="black" value="black" ></span>&nbsp;
 				  <span class="w3-bar-item w3-badge w3-large w3-btn" id="red" value="red" ></span>&nbsp;
@@ -75,9 +73,16 @@
 				  <span class="w3-bar-item w3-badge w3-large w3-btn" id="yellow" value="yellow" ></span>&nbsp;
 				  <span class="w3-bar-item w3-badge w3-large w3-btn" id="blue" value="blue" ></span>&nbsp;
 				  <span class="w3-bar-item w3-badge w3-large w3-btn" id="violet" value="violet" ></span>&nbsp;
-				  <span class="w3-bar-item w3-large w3-btn" id="white" value="white" ><i class="fa fa-eraser"></i></span>&nbsp;
-				  <span class="w3-bar-item w3-large w3-btn" id="clear" ><i class="fa fa-close"></i></span>
+				  <button class="w3-bar-item w3-xlarge w3-btn fa fa-eraser" id="white" value="white" ></button>&nbsp;
+				  <button class="w3-bar-item w3-xlarge w3-btn fa fa-close" id="clear" ></button>
 				</div>
+				
+				<div class="w3-row w3-section w3-center ">
+				<canvas id="myCanvas" height="300" width="308" style="border:1px solid #000000;background-color:white;">
+				</canvas>
+				</div>
+				
+			
 					
 				<div class="w3-row w3-section w3-center w3-animate-down" id="achievement">
 				<span class="fa fa-star"></span>You unlocked a new color!<span class="fa fa-star"></span>
@@ -123,10 +128,10 @@
 </div>
 <div class="w3-row w3-mobile w3-center"  id="gameSet">
 		
-		<div id="roomSet" class="w3-cell-middle w3-container w3-theme" style="padding:20px;margin-top:70px">
+		<div id="roomSet" class="w3-cell-middle w3-container w3-theme" style="padding:20px;margin-top:50px">
 			
 		       <div class="w3-row w3-container w3-center">
-				<img src="pb.png" width="50px"/>
+				<span style="font-family:Trattatello, fantasy">Guess My Sketch</span><img src="pb.png" width="50px"/>
 				</div>
 				
 				
