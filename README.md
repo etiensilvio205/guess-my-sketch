@@ -6,5 +6,5 @@ WARNING: Since the project is not completed, you may experience bugs and crashes
 
 If you want to collaborate or suggests any feature, please do not hesitate ♥.
 
-APP Requirements
+APP Requirements:
 NodeJS, socket.io, Express
